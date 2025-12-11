@@ -6,3 +6,4 @@ google-genai
 python-multipart
 pydantic
 streamlit
+PyQt6

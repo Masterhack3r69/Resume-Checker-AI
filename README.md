@@ -1,6 +1,6 @@
 # Resume Checker AI 🤖
 
-An application that analyzes resumes against job descriptions using Google Gemini 2.5 Flash and ChromaDB. It features a deep "Recruiter Persona" analysis engine that evaluates candidates on specific heuristics, content style, and formatting.
+An application that analyzes resumes against job descriptions using Google Gemini and ChromaDB. It features a deep "Recruiter Persona" analysis engine that evaluates candidates on specific heuristics, content style, and formatting.
 
 You can run this application as a **Desktop GUI Application** or a **Web Application**.
 
@@ -19,9 +19,14 @@ You can run this application as a **Desktop GUI Application** or a **Web Applica
 
 ## 🛠️ Tech Stack
 
+<<<<<<< HEAD
 - **Core Logic**: Python 3.9+, Google Gemini 2.5 Flash, ChromaDB
 - **Desktop GUI**: PyQt6
 - **Web App**: FastAPI, React, TypeScript, Vite, TailwindCSS, Framer Motion
+=======
+- **Backend**: FastAPI, Python 3.9+, Google Gemini, ChromaDB
+- **Frontend**: React, TypeScript, Vite, TailwindCSS, Lucide Icons, Framer Motion
+>>>>>>> 6267ff7a2c1f51b8d71a5d575cf363952659a002
 
 ## 📦 Setup & Installation
 

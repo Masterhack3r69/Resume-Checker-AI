@@ -84,24 +84,35 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.setWindowTitle("Resume Checker AI")
-        self.resize(1000, 850)
+        self.resize(720, 502)
+        self.center_window()
         self.pdf_path = None
         
-        self.setup_ui()
         self.apply_styles()
+        self.setup_ui()
+
+    def center_window(self):
+        qr = self.frameGeometry()
+        cp = self.screen().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
 
     def setup_ui(self):
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         main_layout = QVBoxLayout(central_widget)
-        main_layout.setSpacing(20)
-        main_layout.setContentsMargins(30, 30, 30, 30)
+        main_layout.setSpacing(10)
+        main_layout.setContentsMargins(20, 20, 20, 20)
 
         # Header Title
         header_layout = QHBoxLayout()
-        title_label = QLabel("Resume Checker AI 🤖")
+        title_label = QLabel("Resume Checker AI")
         title_label.setObjectName("titleLabel")
+        subtitle_label = QLabel("Premium Edition")
+        subtitle_label.setObjectName("subtitleLabel")
+        
         header_layout.addWidget(title_label)
+        header_layout.addWidget(subtitle_label)
         header_layout.addStretch()
         main_layout.addLayout(header_layout)
 
@@ -109,15 +120,20 @@ class MainWindow(QMainWindow):
         content_frame = QFrame()
         content_frame.setObjectName("contentFrame")
         content_layout = QVBoxLayout(content_frame)
-        content_layout.setSpacing(15)
-        content_layout.setContentsMargins(20, 20, 20, 20)
+        content_layout.setSpacing(10)
+        content_layout.setContentsMargins(15, 15, 15, 15)
         
         # 1. File Upload Section
+        file_label_title = QLabel("1. Upload Resume")
+        file_label_title.setObjectName("sectionTitle")
+        content_layout.addWidget(file_label_title)
+
         file_box = QFrame()
         file_box.setObjectName("sectionBox")
         file_layout_inner = QHBoxLayout(file_box)
+        file_layout_inner.setContentsMargins(15, 15, 15, 15)
         
-        self.select_btn = QPushButton("📁 Upload Resume (PDF)")
+        self.select_btn = QPushButton("📁 Select PDF Resume")
         self.select_btn.setObjectName("uploadBtn")
         self.select_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.select_btn.clicked.connect(self.select_file)
@@ -129,13 +145,15 @@ class MainWindow(QMainWindow):
         file_layout_inner.addWidget(self.file_label)
         file_layout_inner.addStretch()
         
-        content_layout.addWidget(QLabel("1. Upload Resume"))
         content_layout.addWidget(file_box)
 
         # 2. Job Description Section
-        content_layout.addWidget(QLabel("2. Job Description"))
+        jd_label_title = QLabel("2. Job Description")
+        jd_label_title.setObjectName("sectionTitle")
+        content_layout.addWidget(jd_label_title)
+
         self.jd_input = QTextEdit()
-        self.jd_input.setPlaceholderText("Paste the job description here to compare against...")
+        self.jd_input.setPlaceholderText("Paste the job description here...")
         self.jd_input.setMinimumHeight(120)
         content_layout.addWidget(self.jd_input)
 
@@ -144,36 +162,40 @@ class MainWindow(QMainWindow):
         self.analyze_btn.setObjectName("analyzeBtn")
         self.analyze_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.analyze_btn.clicked.connect(self.start_analysis)
-        self.analyze_btn.setMinimumHeight(55)
+        self.analyze_btn.setMinimumHeight(45)
         content_layout.addWidget(self.analyze_btn)
 
         # Progress Bar
         self.progress_bar = QProgressBar()
         self.progress_bar.setVisible(False)
         self.progress_bar.setTextVisible(False)
-        self.progress_bar.setRange(0, 0)
+        self.progress_bar.setRange(0, 0) # Indeterminate
         content_layout.addWidget(self.progress_bar)
 
         main_layout.addWidget(content_frame)
 
         # Results Area
-        results_label = QLabel("Analysis Results")
+        results_label = QLabel("Analysis Report")
         results_label.setObjectName("subHeaderLabel")
         main_layout.addWidget(results_label)
 
         self.results_area = QTextEdit()
         self.results_area.setReadOnly(True)
-        self.results_area.setPlaceholderText("Results will appear here...")
+        self.results_area.setPlaceholderText("Analysis results will appear here...")
         main_layout.addWidget(self.results_area)
 
     def apply_styles(self):
-        # Set Dark Theme Palette
+        # Premium Dark Theme Palette
+        # Background: #0f172a (Slate 900)
+        # Surface: #1e293b (Slate 800)
+        # Accent: #6366f1 (Indigo 500)
+        # Text: #f8fafc (Slate 50)
+        
         dark_palette = QPalette()
-        # Backgrounds
-        bg_color = QColor(18, 18, 18)
-        surface_color = QColor(30, 30, 30)
-        text_color = QColor(240, 240, 240)
-        accent_color = QColor(59, 130, 246) # Blue-500
+        bg_color = QColor(15, 23, 42)
+        surface_color = QColor(30, 41, 59)
+        text_color = QColor(248, 250, 252)
+        accent_color = QColor(99, 102, 241)
         
         dark_palette.setColor(QPalette.ColorRole.Window, bg_color)
         dark_palette.setColor(QPalette.ColorRole.WindowText, text_color)
@@ -186,108 +208,128 @@ class MainWindow(QMainWindow):
         
         QApplication.setPalette(dark_palette)
 
-        # Stylesheet
         self.setStyleSheet("""
             QMainWindow {
-                background-color: #121212;
+                background-color: #0f172a;
             }
             QLabel {
-                font-family: 'Segoe UI', 'Roboto', sans-serif;
-                font-size: 14px;
-                color: #e0e0e0;
+                font-family: 'Segoe UI', 'Inter', sans-serif;
+                font-size: 13px;
+                color: #cbd5e1;
             }
             QLabel#titleLabel {
-                font-size: 28px;
-                font-weight: 700;
-                color: #ffffff;
-                padding: 5px;
+                font-size: 22px;
+                font-weight: 800;
+                color: #f8fafc;
+                margin-right: 8px;
+            }
+            QLabel#subtitleLabel {
+                font-size: 11px;
+                font-weight: 600;
+                color: #6366f1;
+                background-color: #1e1b4b;
+                border: 1px solid #312e81;
+                border-radius: 4px;
+                padding: 2px 6px;
+                margin-top: 6px;
+            }
+            QLabel#sectionTitle {
+                font-size: 14px;
+                font-weight: 600;
+                color: #94a3b8;
+                margin-top: 5px;
+                margin-bottom: 3px;
             }
             QLabel#subHeaderLabel {
-                font-size: 18px;
-                font-weight: 600;
-                color: #ffffff;
-                margin-top: 10px;
+                font-size: 16px;
+                font-weight: 700;
+                color: #f8fafc;
+                margin-top: 5px;
             }
             QFrame#contentFrame {
-                background-color: #1e1e1e;
+                background-color: #1e293b;
                 border-radius: 12px;
-                border: 1px solid #333333;
+                border: 1px solid #334155;
             }
             QFrame#sectionBox {
-                background-color: #252525;
+                background-color: #0f172a;
                 border-radius: 8px;
-                border: 1px solid #333333;
+                border: 1px solid #334155;
             }
             QPushButton {
-                background-color: #333333;
-                color: #ffffff;
-                border: 1px solid #444444;
+                background-color: #334155;
+                color: #e2e8f0;
+                border: 1px solid #475569;
                 border-radius: 6px;
-                padding: 10px 16px;
-                font-weight: 500;
-                font-size: 14px;
+                padding: 8px 12px;
+                font-weight: 600;
+                font-size: 13px;
             }
             QPushButton:hover {
-                background-color: #404040;
-                border-color: #555555;
+                background-color: #475569;
+                border-color: #64748b;
             }
             QPushButton#uploadBtn {
-                background-color: #2a2a2a;
+                background-color: #1e293b;
                 text-align: left;
                 padding-left: 15px;
             }
             QPushButton#analyzeBtn {
-                background-color: #2563eb; /* Blue-600 */
+                background-color: #4f46e5;
                 border: none;
-                font-size: 16px;
+                color: white;
+                font-size: 15px;
                 font-weight: bold;
+                border-radius: 8px;
                 margin-top: 10px;
             }
             QPushButton#analyzeBtn:hover {
-                background-color: #1d4ed8; /* Blue-700 */
+                background-color: #4338ca;
             }
             QPushButton#analyzeBtn:disabled {
-                background-color: #333;
-                color: #777;
+                background-color: #334155;
+                color: #94a3b8;
             }
             QTextEdit {
-                background-color: #252525;
-                color: #e0e0e0;
-                border: 1px solid #333333;
+                background-color: #0f172a;
+                color: #e2e8f0;
+                border: 1px solid #334155;
                 border-radius: 8px;
-                padding: 12px;
-                font-family: 'Segoe UI', sans-serif;
-                font-size: 14px;
-                selection-background-color: #2563eb;
+                padding: 8px;
+                font-family: 'Consolas', 'Monaco', monospace; 
+                font-size: 13px;
+                selection-background-color: #6366f1;
+                line-height: 1.4;
             }
             QTextEdit:focus {
-                border: 1px solid #2563eb;
+                border: 1px solid #6366f1;
             }
             QLabel#fileLabel {
-                color: #aaaaaa;
+                color: #94a3b8;
                 font-style: italic;
-                margin-left: 10px;
+                margin-left: 15px;
             }
             QProgressBar {
-                background-color: #333;
+                background-color: #0f172a;
                 border: none;
-                border-radius: 4px;
-                height: 6px;
+                border-radius: 6px;
+                height: 8px;
+                text-align: center;
             }
             QProgressBar::chunk {
-                background-color: #2563eb;
-                border-radius: 4px;
+                background-color: #6366f1;
+                border-radius: 6px;
             }
             QScrollBar:vertical {
                 border: none;
-                background: #1e1e1e;
-                width: 10px;
+                background: #0f172a;
+                width: 12px;
                 margin: 0px; 
             }
             QScrollBar::handle:vertical {
-                background: #444;
-                min-height: 20px;
-                border-radius: 5px;
+                background: #334155;
+                min-height: 30px;
+                border-radius: 6px;
             }
             QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
                 height: 0px;
@@ -301,8 +343,7 @@ class MainWindow(QMainWindow):
         if file_path:
             self.pdf_path = file_path
             self.file_label.setText(os.path.basename(file_path))
-            # Visual feedback
-            self.select_btn.setStyleSheet("background-color: #064e3b; border-color: #059669; color: #a7f3d0;") # Green tint
+            self.select_btn.setStyleSheet("background-color: #065f46; border-color: #059669; color: #d1fae5;") # Emerald tint
             self.select_btn.setText("✅ Resume Selected")
 
     def start_analysis(self):
@@ -318,7 +359,7 @@ class MainWindow(QMainWindow):
         self.analyze_btn.setEnabled(False)
         self.select_btn.setEnabled(False)
         self.progress_bar.setVisible(True)
-        self.results_area.setHtml("<div style='color: #888; text-align: center; margin-top: 20px;'><i>Analyzing your resume... This may take up to 30 seconds.</i></div>")
+        self.results_area.setHtml("<div style='color: #94a3b8; text-align: center; margin-top: 40px; font-family: Segoe UI;'><h3>🤖 Analyzing Resume...</h3><p>Extracting text, verifying skills, and applying recruiter heuristics.</p></div>")
 
         self.worker = AnalysisWorker(self.pdf_path, jd_text)
         self.worker.finished.connect(self.display_results)
@@ -340,68 +381,109 @@ class MainWindow(QMainWindow):
         interview_prep = result.get("interview_prep", [])
         
         # Color for Score
-        score_color = "#22c55e" if match_score >= 80 else "#eab308" if match_score >= 50 else "#ef4444"
+        score_color = "#4ade80" if match_score >= 80 else "#facc15" if match_score >= 50 else "#f87171"
         
-        # HTML Report Construction
+        # Enhanced HTML Report
         html = f"""
         <style>
-            h2 {{ color: {score_color}; margin-bottom: 5px; }}
-            h3 {{ color: #ffffff; margin-top: 20px; font-size: 16px; background-color: #333; padding: 5px; border-radius: 4px; }}
-            p, li {{ line-height: 1.5; color: #d1d5db; }}
-            .warning {{ color: #f87171; font-weight: bold; }}
-            .success {{ color: #4ade80; }}
-            .highlight {{ color: #60a5fa; }}
+            body {{ font-family: 'Segoe UI', sans-serif; color: #e2e8f0; }}
+            h2 {{ color: {score_color}; margin-top: 0; }}
+            .card {{ 
+                background-color: #1e293b; 
+                border: 1px solid #334155; 
+                border-radius: 8px; 
+                padding: 15px; 
+                margin-bottom: 20px; 
+            }}
+            .score-container {{
+                text-align: center;
+                padding: 20px;
+                background-color: #0f172a;
+                border-radius: 12px;
+                margin-bottom: 25px;
+                border: 1px solid #334155;
+            }}
+            .score-circle {{
+                font-size: 56px;
+                font-weight: bold;
+                color: {score_color};
+                margin: 0;
+            }}
+            .score-label {{
+                color: #94a3b8;
+                font-size: 14px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }}
+            h3 {{
+                color: #f8fafc;
+                font-size: 18px;
+                border-bottom: 2px solid #334155;
+                padding-bottom: 8px;
+                margin-top: 0;
+            }}
+            ul, ol {{ padding-left: 20px; margin-top: 10px; }}
+            li {{ margin-bottom: 8px; line-height: 1.6; }}
+            .match-item {{ color: #cbd5e1; }}
+            .match-skill {{ color: #4ade80; font-weight: bold; }}
+            .miss-skill {{ color: #f87171; font-weight: bold; }}
+            .warning {{ color: #f87171; }}
+            .tip {{ color: #94a3b8; font-style: italic; }}
         </style>
         
-        <div style="text-align: center;">
-            <p style="font-size: 14px; color: #aaa; margin-bottom: 0;">MATCH SCORE</p>
-            <h1 style="color: {score_color}; font-size: 48px; margin: 0;">{match_score}%</h1>
+        <div class="score-container">
+            <p class="score-label">Match Score</p>
+            <h1 class="score-circle">{match_score}%</h1>
         </div>
         """
         
         # Red Flags
         if red_flags:
-            html += "<h3>⚠️ Critical Red Flags</h3><ul>"
+            html += """<div class="card" style="border-left: 4px solid #f87171;">
+                        <h3>⚠️ Critical Red Flags</h3><ul>"""
             for flag in red_flags:
                 html += f"<li class='warning'>{flag}</li>"
-            html += "</ul>"
+            html += "</ul></div>"
             
-        # Analysis
-        html += "<h3>✅ Strong Matches</h3><ul>"
+        # Matches
+        html += """<div class="card" style="border-left: 4px solid #4ade80;">
+                    <h3>✅ Strong Matches</h3><ul>"""
         if strong_matches:
             for match in strong_matches:
                 if isinstance(match, dict):
-                    html += f"<li><b>{match.get('skill')}</b>: {match.get('evidence', '')}</li>"
+                    html += f"<li class='match-item'><span class='match-skill'>{match.get('skill')}</span>: {match.get('evidence', '')}</li>"
                 else:
                     html += f"<li>{match}</li>"
         else:
             html += "<li>No strong matches found.</li>"
-        html += "</ul>"
+        html += "</ul></div>"
         
-        html += "<h3>❌ Missing Skills & Gaps</h3><ul>"
+        # Missing Skills
+        html += """<div class="card" style="border-left: 4px solid #fbbf24;">
+                    <h3>❌ Missing Skills & Gaps</h3><ul>"""
         if missing_skills:
             for gap in missing_skills:
                 if isinstance(gap, dict):
-                    html += f"<li><b>{gap.get('skill')}</b>: {gap.get('recommendation', '')}</li>"
+                    html += f"<li class='match-item'><span class='miss-skill'>{gap.get('skill')}</span>: {gap.get('recommendation', '')}</li>"
                 else:
                     html += f"<li>{gap}</li>"
         else:
             html += "<li>No major skills missing!</li>"
-        html += "</ul>"
+        html += "</ul></div>"
 
         # Style Critique
         if style_critique:
-             html += "<h3>🎨 Style & Formatting</h3><ul>"
+             html += """<div class="card"><h3>🎨 Style & Formatting</h3><ul>"""
              for critique in style_critique:
                  html += f"<li>{critique}</li>"
-             html += "</ul>"
+             html += "</ul></div>"
 
         # Interview Prep
         if interview_prep:
-            html += "<h3>🎤 Interview Prep Questions</h3><ol>"
+            html += """<div class="card"><h3>🎤 Interview Prep</h3><ol>"""
             for q in interview_prep:
                 html += f"<li>{q}</li>"
-            html += "</ol>"
+            html += "</ol></div>"
 
         self.results_area.setHtml(html)
 
@@ -410,7 +492,7 @@ class MainWindow(QMainWindow):
         self.analyze_btn.setEnabled(True)
         self.select_btn.setEnabled(True)
         QMessageBox.critical(self, "Error", f"An error occurred:\n{error_msg}")
-        self.results_area.setHtml(f"<p style='color: red;'>Analysis failed: {error_msg}</p>")
+        self.results_area.setHtml(f"<div style='color: #f87171; padding: 20px; text-align: center;'><h3>Analysis Failed</h3><p>{error_msg}</p></div>")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
